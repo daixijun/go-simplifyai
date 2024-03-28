@@ -13,30 +13,41 @@ import (
 )
 
 // DOC: https://translate.simplifyai.cn/developer
-const baseURL = "https://translate.simplifyai.cn/api/v1"
-const defaultContextType = "application/json"
+const (
+	baseURL            = "https://translate.simplifyai.cn/api/v1"
+	defaultContextType = "application/json"
+	defaultTimeout     = 10 * time.Second
+)
 
 type client struct {
 	httpClient *http.Client
 	apiKey     string
+	timeout    time.Duration
+	baseUrl    string
 }
 
-func NewClient(apiKey string, httpClient *http.Client) *client {
-	if httpClient == nil {
-		httpClient = &http.Client{
-			Timeout: 10 * time.Second,
+func NewClient(apiKey string, opts ...Option) *client {
+	c := &client{apiKey: apiKey, baseUrl: baseURL, timeout: defaultTimeout}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	if c.httpClient == nil {
+		c.httpClient = &http.Client{
+			Timeout: c.timeout,
 		}
 	}
 
-	return &client{httpClient: httpClient, apiKey: apiKey}
+	return c
 }
 
-func (c *client) request(ctx context.Context, method, path string, body io.Reader, contentType string) ([]byte, error) {
+func (c *client) doRequest(ctx context.Context, method, path string, body io.Reader, contentType string) ([]byte, error) {
 	if len(contentType) == 0 {
 		contentType = defaultContextType
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, baseURL+path, body)
+	req, err := http.NewRequestWithContext(ctx, method, c.baseUrl+path, body)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +94,7 @@ func (c *client) CreateTranslationTask(ctx context.Context, req *CreateTranslati
 		_ = bodyWriter.WriteField("glossary", req.Glossary)
 	}
 	_ = bodyWriter.Close()
-	data, err := c.request(ctx, "POST", "/translations", bodyBuffer, bodyWriter.FormDataContentType())
+	data, err := c.doRequest(ctx, "POST", "/translations", bodyBuffer, bodyWriter.FormDataContentType())
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +109,8 @@ func (c *client) CreateTranslationTask(ctx context.Context, req *CreateTranslati
 }
 
 // QueryTranslationTask 查询翻译任务
-func (c *client) QueryTranslationTask(ctx context.Context, taskID string) (*QueryTranslationTaskResponse, error) {
-	data, err := c.request(ctx, "GET", "/translations/"+taskID, nil, "")
+func (c *client) QueryTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
+	data, err := c.doRequest(ctx, "GET", "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
 	}
@@ -113,14 +124,14 @@ func (c *client) QueryTranslationTask(ctx context.Context, taskID string) (*Quer
 }
 
 // DeleteTranslationTask 删除翻译任务
-func (c *client) DeleteTranslationTask(ctx context.Context, taskID string) error {
-	_, err := c.request(ctx, "DELETE", "/translations/"+taskID, nil, "")
+func (c *client) DeleteTranslationTask(ctx context.Context, taskId string) error {
+	_, err := c.doRequest(ctx, "DELETE", "/translations/"+taskId, nil, "")
 	return err
 }
 
 // StartTranslationTask 启动翻译任务
-func (c *client) StartTranslationTask(ctx context.Context, taskID string) (*QueryTranslationTaskResponse, error) {
-	data, err := c.request(ctx, "PUT", "/translations/"+taskID, nil, "")
+func (c *client) StartTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
+	data, err := c.doRequest(ctx, "PUT", "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +145,7 @@ func (c *client) StartTranslationTask(ctx context.Context, taskID string) (*Quer
 
 // ListAvailableLanguages 列出支持翻译的语言
 func (c *client) ListAvailableLanguages(ctx context.Context) ([]string, error) {
-	data, err := c.request(ctx, "GET", "/languages", nil, "")
+	data, err := c.doRequest(ctx, "GET", "/languages", nil, "")
 	if err != nil {
 		return nil, err
 	}

@@ -40,5 +40,5 @@ type QueryTranslationTaskResponse struct {
 	TranslatedFileURL string     `json:"translatedFileUrl"` // 译文文档的 URL，翻译完成才有。
 	BilingualFileURL  string     `json:"bilingualFileUrl"`  // 双语文档的 URL，翻译完成才有。
 	Price             int        `json:"price"`             // 此次翻译使用的积分
-	TotalTokens       int        `json:"totalToken"`        // 需要翻译的 token 总数
+	TotalToken        int        `json:"totalToken"`        // 需要翻译的 token 总数
 }

@@ -19,15 +19,15 @@ const (
 	defaultTimeout     = 10 * time.Second
 )
 
-type client struct {
+type Client struct {
 	httpClient *http.Client
 	apiKey     string
 	timeout    time.Duration
 	baseUrl    string
 }
 
-func NewClient(apiKey string, opts ...Option) *client {
-	c := &client{apiKey: apiKey, baseUrl: baseURL, timeout: defaultTimeout}
+func NewClient(apiKey string, opts ...Option) *Client {
+	c := &Client{apiKey: apiKey, baseUrl: baseURL, timeout: defaultTimeout}
 
 	for _, opt := range opts {
 		opt(c)
@@ -42,7 +42,7 @@ func NewClient(apiKey string, opts ...Option) *client {
 	return c
 }
 
-func (c *client) doRequest(ctx context.Context, method, path string, body io.Reader, contentType string) ([]byte, error) {
+func (c *Client) doRequest(ctx context.Context, method, path string, body io.Reader, contentType string) ([]byte, error) {
 	if len(contentType) == 0 {
 		contentType = defaultContextType
 	}
@@ -71,7 +71,7 @@ func (c *client) doRequest(ctx context.Context, method, path string, body io.Rea
 }
 
 // CreateTranslationTask 创建翻译任务
-func (c *client) CreateTranslationTask(ctx context.Context, req *CreateTranslationTaskRequest) (*CreateTranslationTaskResponse, error) {
+func (c *Client) CreateTranslationTask(ctx context.Context, req *CreateTranslationTaskRequest) (*CreateTranslationTaskResponse, error) {
 	file, err := os.Open(req.File)
 	if err != nil {
 		return nil, fmt.Errorf("open file failed: %w", err)
@@ -109,7 +109,7 @@ func (c *client) CreateTranslationTask(ctx context.Context, req *CreateTranslati
 }
 
 // QueryTranslationTask 查询翻译任务
-func (c *client) QueryTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
+func (c *Client) QueryTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
 	data, err := c.doRequest(ctx, "GET", "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
@@ -124,13 +124,13 @@ func (c *client) QueryTranslationTask(ctx context.Context, taskId string) (*Quer
 }
 
 // DeleteTranslationTask 删除翻译任务
-func (c *client) DeleteTranslationTask(ctx context.Context, taskId string) error {
+func (c *Client) DeleteTranslationTask(ctx context.Context, taskId string) error {
 	_, err := c.doRequest(ctx, "DELETE", "/translations/"+taskId, nil, "")
 	return err
 }
 
 // StartTranslationTask 启动翻译任务
-func (c *client) StartTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
+func (c *Client) StartTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
 	data, err := c.doRequest(ctx, "PUT", "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func (c *client) StartTranslationTask(ctx context.Context, taskId string) (*Quer
 }
 
 // ListAvailableLanguages 列出支持翻译的语言
-func (c *client) ListAvailableLanguages(ctx context.Context) ([]string, error) {
+func (c *Client) ListAvailableLanguages(ctx context.Context) ([]string, error) {
 	data, err := c.doRequest(ctx, "GET", "/languages", nil, "")
 	if err != nil {
 		return nil, err

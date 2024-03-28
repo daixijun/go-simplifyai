@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/daixijun/simplifyai"
+	"github.com/daixijun/go-simplifyai"
 )
 
 var (

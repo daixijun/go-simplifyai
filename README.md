@@ -18,7 +18,7 @@ import (
  "log"
  "os"
 
- "github.com/daixijun/simplifyai"
+ "github.com/daixijun/go-simplifyai"
 )
 
 var (

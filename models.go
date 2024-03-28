@@ -33,7 +33,7 @@ const (
 	TaskStatusNotSupported TaskStatus = "NotSupported"
 )
 
-// QueryTranslationTaskResponse 翻译任务
+// QueryTranslationTaskResponse 查询翻译任务返回
 type QueryTranslationTaskResponse struct {
 	Status            TaskStatus `json:"status"`            // 任务状态
 	Progress          int        `json:"progress"`          // 任务进度，0 到 100
@@ -41,4 +41,12 @@ type QueryTranslationTaskResponse struct {
 	BilingualFileURL  string     `json:"bilingualFileUrl"`  // 双语文档的 URL，翻译完成才有。
 	Price             int        `json:"price"`             // 此次翻译使用的积分
 	TotalToken        int        `json:"totalToken"`        // 需要翻译的 token 总数
+}
+
+// StartTranslationTaskResponse 启动翻译任务返回
+type StartTranslationTaskResponse struct {
+	Status     TaskStatus `json:"status"`     // 任务状态
+	Progress   int        `json:"progress"`   // 任务进度, 0 到 100
+	Price      int        `json:"price"`      // 此次翻译使用的积分
+	TotalToken int        `json:"totalToken"` // 需要翻译的 Token 总数
 }

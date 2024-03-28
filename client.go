@@ -130,13 +130,13 @@ func (c *Client) DeleteTranslationTask(ctx context.Context, taskId string) error
 }
 
 // StartTranslationTask 启动翻译任务
-func (c *Client) StartTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
+func (c *Client) StartTranslationTask(ctx context.Context, taskId string) (*StartTranslationTaskResponse, error) {
 	data, err := c.doRequest(ctx, "PUT", "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
 	}
 
-	var task QueryTranslationTaskResponse
+	var task StartTranslationTaskResponse
 	if err := json.Unmarshal(data, &task); err != nil {
 		return nil, err
 	}

@@ -94,7 +94,7 @@ func (c *Client) CreateTranslationTask(ctx context.Context, req *CreateTranslati
 		_ = bodyWriter.WriteField("glossary", req.Glossary)
 	}
 	_ = bodyWriter.Close()
-	data, err := c.doRequest(ctx, "POST", "/translations", bodyBuffer, bodyWriter.FormDataContentType())
+	data, err := c.doRequest(ctx, http.MethodPost, "/translations", bodyBuffer, bodyWriter.FormDataContentType())
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (c *Client) CreateTranslationTask(ctx context.Context, req *CreateTranslati
 
 // QueryTranslationTask 查询翻译任务
 func (c *Client) QueryTranslationTask(ctx context.Context, taskId string) (*QueryTranslationTaskResponse, error) {
-	data, err := c.doRequest(ctx, "GET", "/translations/"+taskId, nil, "")
+	data, err := c.doRequest(ctx, http.MethodGet, "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
 	}
@@ -125,13 +125,13 @@ func (c *Client) QueryTranslationTask(ctx context.Context, taskId string) (*Quer
 
 // DeleteTranslationTask 删除翻译任务
 func (c *Client) DeleteTranslationTask(ctx context.Context, taskId string) error {
-	_, err := c.doRequest(ctx, "DELETE", "/translations/"+taskId, nil, "")
+	_, err := c.doRequest(ctx, http.MethodDelete, "/translations/"+taskId, nil, "")
 	return err
 }
 
 // StartTranslationTask 启动翻译任务
 func (c *Client) StartTranslationTask(ctx context.Context, taskId string) (*StartTranslationTaskResponse, error) {
-	data, err := c.doRequest(ctx, "PUT", "/translations/"+taskId, nil, "")
+	data, err := c.doRequest(ctx, http.MethodPut, "/translations/"+taskId, nil, "")
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func (c *Client) StartTranslationTask(ctx context.Context, taskId string) (*Star
 
 // ListAvailableLanguages 列出支持翻译的语言
 func (c *Client) ListAvailableLanguages(ctx context.Context) ([]string, error) {
-	data, err := c.doRequest(ctx, "GET", "/languages", nil, "")
+	data, err := c.doRequest(ctx, http.MethodGet, "/languages", nil, "")
 	if err != nil {
 		return nil, err
 	}
